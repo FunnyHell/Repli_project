@@ -2,18 +2,25 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Product;
 use App\Http\Requests\StoreProductRequest;
 use App\Http\Requests\UpdateProductRequest;
+use App\Models\Product;
+use App\Services\Contracts\ProductServiceInterface;
+use Inertia\Inertia;
 
 class ProductController extends Controller
 {
+    public function __construct(protected ProductServiceInterface $productService)
+    {
+    }
+
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(): \Inertia\Response
     {
-        //
+        $products = $this->productService->all();
+        return Inertia::render('Welcome', ['products' => $products]);
     }
 
     /**

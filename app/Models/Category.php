@@ -9,4 +9,8 @@ class Category extends Model
 {
     use HasFactory;
     public $timestamps = false;
+    public function product(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(Product::class);
+    }
 }
