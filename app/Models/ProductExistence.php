@@ -9,8 +9,12 @@ class ProductExistence extends Model
 {
     use HasFactory;
 
-    public function product(): \Illuminate\Database\Eloquent\Relations\HasMany
+    public function location(): \Illuminate\Database\Eloquent\Relations\MorphTo
     {
-        return $this->hasMany(Product::class);
+        return $this->morphTo();
+    }
+    public function product(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(Product::class);
     }
 }

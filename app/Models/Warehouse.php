@@ -9,4 +9,14 @@ class Warehouse extends Model
 {
     use HasFactory;
     public $timestamps = false;
+
+    public function productExistence(): \Illuminate\Database\Eloquent\Relations\MorphMany
+    {
+        return $this->morphMany(ProductExistence::class, 'location');
+    }
+
+    public function user(): \Illuminate\Database\Eloquent\Relations\MorphMany
+    {
+        return $this->morphMany(User::class, 'location');
+    }
 }

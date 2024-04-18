@@ -23,9 +23,9 @@ class Product extends Model
         return $this->belongsToMany(Order::class, 'product_orders', 'product_id', 'order_id');
     }
 
-    public function product_existence(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    public function product_existence(): \Illuminate\Database\Eloquent\Relations\HasOne
     {
-        return $this->belongsTo(ProductExistence::class);
+        return $this->hasOne(ProductExistence::class);
     }
 
     public function supply_request(): \Illuminate\Database\Eloquent\Relations\BelongsTo

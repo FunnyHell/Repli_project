@@ -10,9 +10,22 @@ use App\Repositories\Contracts\ProductRepositoryInterface;
 class ProductRepository implements ProductRepositoryInterface
 {
 
-    public function index(): \Illuminate\Database\Eloquent\Collection|array
+    public function index()
     {
-        return Product::with(['category', 'feature', 'order', 'product_existence', 'supply_request'])->get();
+        $user = auth()->user();
+        if ($user) {
+            $locationId = $user->location_id;
+            $locationType = $user->location_type;
+            return Product::with(['category', 'feature', 'order',
+                'product_existence' => function ($query) use ($locationId, $locationType) {
+                $query->where('location_id', $locationId)->where('location_type', $locationType);
+            }, 'supply_request'=>function ($query) use ($locationId, $locationType) {
+                if ($locationType == 'warehouse') {
+                    $query->where('warehouse_id', $locationId);
+                }
+            }])->get();
+        }
+        return null;
     }
 
     public function create()
