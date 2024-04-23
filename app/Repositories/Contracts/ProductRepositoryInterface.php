@@ -11,8 +11,8 @@ interface ProductRepositoryInterface
     public function index();
     public function create();
     public function store(StoreProductRequest $request);
-    public function show(Product $product);
-    public function edit(Product $product);
+    public function show($id);
+    public function edit($id);
     public function update(UpdateProductRequest $request, Product $product);
-    public function destroy(Product $product);
+    public function destroy($id);
 }

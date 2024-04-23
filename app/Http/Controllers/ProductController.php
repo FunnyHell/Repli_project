@@ -6,6 +6,7 @@ use App\Http\Requests\StoreProductRequest;
 use App\Http\Requests\UpdateProductRequest;
 use App\Models\Product;
 use App\Services\Contracts\ProductServiceInterface;
+use Illuminate\Support\Facades\Session;
 use Inertia\Inertia;
 
 class ProductController extends Controller
@@ -66,8 +67,18 @@ class ProductController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Product $product)
+    public function destroy($id)
     {
-        //
+        if(auth()->user()) {
+            if($this->productService->delete($id)){
+                Session::flash('message', 'Success');
+                return redirect()->back();
+            } else {
+                Session::flash('message', 'Error');
+                return redirect()->back();
+            }
+        } else {
+            return redirect()->route('login');
+        }
     }
 }

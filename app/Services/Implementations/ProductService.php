@@ -21,9 +21,10 @@ class ProductService implements ProductServiceInterface
         // TODO: Implement update() method.
     }
 
-    public function delete($id)
+    public function delete($id): bool
     {
-        // TODO: Implement delete() method.
+        $product = $this->productRepository->show($id);
+        return $this->productRepository->destroy($id);
     }
 
     public function all()

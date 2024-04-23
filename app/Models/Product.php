@@ -8,7 +8,18 @@ use Illuminate\Database\Eloquent\Model;
 class Product extends Model
 {
     use HasFactory;
-    public $timestamps = false;
+
+    protected $fillable = [
+        'name',
+        'description',
+        'price',
+        'slug',
+        'deleted_at',
+    ];
+
+    protected $casts = [
+      'category_id' => 'integer',
+    ];
     public function category(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Category::class);
@@ -31,5 +42,10 @@ class Product extends Model
     public function supply_request(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(SupplyRequest::class);
+    }
+
+    public function product_image(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(ProductImage::class);
     }
 }

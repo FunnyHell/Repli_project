@@ -16,7 +16,7 @@ class ProductRepository implements ProductRepositoryInterface
         if ($user) {
             $locationId = $user->location_id;
             $locationType = $user->location_type;
-            return Product::with(['category', 'feature', 'order',
+            return Product::where('deleted_at', null)->with(['category', 'feature', 'order', 'product_image',
                 'product_existence' => function ($query) use ($locationId, $locationType) {
                 $query->where('location_id', $locationId)->where('location_type', $locationType);
             }, 'supply_request'=>function ($query) use ($locationId, $locationType) {
@@ -38,12 +38,12 @@ class ProductRepository implements ProductRepositoryInterface
         // TODO: Implement store() method.
     }
 
-    public function show(Product $product)
+    public function show($id)
     {
         // TODO: Implement show() method.
     }
 
-    public function edit(Product $product)
+    public function edit($id)
     {
         // TODO: Implement edit() method.
     }
@@ -53,8 +53,13 @@ class ProductRepository implements ProductRepositoryInterface
         // TODO: Implement update() method.
     }
 
-    public function destroy(Product $product)
+    public function destroy($id)
     {
-        // TODO: Implement destroy() method.
+        if (Product::find($id)) {
+            if(Product::where('id', $id)->update(['deleted_at' => now()])) {
+                return true;
+            }
+            return false;
+        }
     }
 }
