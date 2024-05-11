@@ -40,7 +40,22 @@ class ProductRepository implements ProductRepositoryInterface
 
     public function show($id)
     {
-        // TODO: Implement show() method.
+        $user = auth()->user();
+        if ($user) {
+            $locationId = $user->location_id;
+            $locationType = $user->location_type;
+            return Product::where('deleted_at', null)->with(['category', 'feature', 'product_image',
+                'order' => function ($query) {
+                    $query->with(['employee', 'client']);
+                },
+                'product_existence' => function ($query) use ($locationId, $locationType) {
+                    $query->where('location_id', $locationId)->where('location_type', $locationType);
+                }, 'supply_request'=>function ($query) use ($locationId, $locationType) {
+                    if ($locationType == 'warehouse') {
+                        $query->where('warehouse_id', $locationId);
+                    }
+                }])->findOrFail($id);
+        }
     }
 
     public function edit($id)

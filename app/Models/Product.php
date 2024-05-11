@@ -39,9 +39,9 @@ class Product extends Model
         return $this->hasOne(ProductExistence::class);
     }
 
-    public function supply_request(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    public function supply_request(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
-        return $this->belongsTo(SupplyRequest::class);
+        return $this->hasMany(SupplyRequest::class);
     }
 
     public function product_image(): \Illuminate\Database\Eloquent\Relations\HasMany

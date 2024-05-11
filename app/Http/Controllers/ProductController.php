@@ -21,7 +21,7 @@ class ProductController extends Controller
     public function index(): \Inertia\Response
     {
         $products = $this->productService->all();
-        return Inertia::render('Welcome', ['products' => $products]);
+        return Inertia::render('Products', ['products' => $products]);
     }
 
     /**
@@ -43,9 +43,10 @@ class ProductController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Product $product)
+    public function show($id, $slug)
     {
-        //
+        $product = $this->productService->find($id);
+        return Inertia::render('Product', ['product' => $product]);
     }
 
     /**

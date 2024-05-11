@@ -98,11 +98,11 @@ onBeforeUnmount(() => {
                     <td class="dark:border-amber-100 border-gray-950 border hidden md:table-cell">
                         <img v-if="product.product_image[0]" :src="'storage/'+product.product_image[0].source"
                              :alt="product.name+' Image'" class="w-full ">
-                        <img v-else :src="'storage/placeholder.png'" :alt="product.name+' Image'"
+                        <img v-else :src="'/storage/placeholder.png'" :alt="product.name+' Image'"
                              class="rounded m-auto my-2">
                     </td>
                     <td class="dark:border-amber-100 border-gray-950 border truncate text-pretty relative">
-                        <a :href="route('products.show', product.id)"
+                        <a :href="route('products.show', {id : product.id, slug: product.slug})"
                            class="p-6 rounded hover:bg-gray-300 dark:hover:bg-gray-700 hover:underline flex items-center
                            absolute left-0 right-0 top-0 bottom-0">
                             {{ product.name }}

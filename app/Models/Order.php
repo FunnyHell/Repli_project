@@ -13,4 +13,14 @@ class Order extends Model
     {
         return $this->belongsToMany(Product::class, 'product_orders', 'order_id', 'product_id');
     }
+
+    public function employee(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(Employee::class);
+    }
+
+    public function client(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(Client::class);
+    }
 }

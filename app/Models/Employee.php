@@ -9,4 +9,9 @@ class Employee extends Model
 {
     use HasFactory;
     public $timestamps = false;
+
+    public function order(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Order::class);
+    }
 }

@@ -34,6 +34,6 @@ class ProductService implements ProductServiceInterface
 
     public function find($id)
     {
-        // TODO: Implement find() method.
+        return $this->productRepository->show($id);
     }
 }

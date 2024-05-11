@@ -9,8 +9,8 @@ class SupplyRequest extends Model
 {
     use HasFactory;
 
-    public function product(): \Illuminate\Database\Eloquent\Relations\HasMany
+    public function product(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
-        return $this->hasMany(Product::class);
+        return $this->belongsTo(Product::class);
     }
 }
