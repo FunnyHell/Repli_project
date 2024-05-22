@@ -2,22 +2,18 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Order;
-use App\Http\Requests\StoreOrderRequest;
-use App\Http\Requests\UpdateOrderRequest;
-use App\Services\Implementations\OrderService;
-use Inertia\Inertia;
+use App\Models\ProductImage;
+use App\Http\Requests\StoreProductImageRequest;
+use App\Http\Requests\UpdateProductImageRequest;
 
-class OrderController extends Controller
+class ProductImageController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function __construct(protected OrderService $service) {
-    }
     public function index()
     {
-
+        //
     }
 
     /**
@@ -31,7 +27,7 @@ class OrderController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreOrderRequest $request)
+    public function store(StoreProductImageRequest $request)
     {
         //
     }
@@ -39,16 +35,15 @@ class OrderController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show($id): \Inertia\Response
+    public function show(ProductImage $productImage)
     {
-        $order = $this->service->find($id);
-        return Inertia::render('Order', ['order' => $order]);
+        //
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Order $order)
+    public function edit(ProductImage $productImage)
     {
         //
     }
@@ -56,7 +51,7 @@ class OrderController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateOrderRequest $request, Order $order)
+    public function update(UpdateProductImageRequest $request, ProductImage $productImage)
     {
         //
     }
@@ -64,7 +59,7 @@ class OrderController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Order $order)
+    public function destroy(ProductImage $productImage)
     {
         //
     }

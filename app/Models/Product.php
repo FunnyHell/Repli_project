@@ -31,7 +31,8 @@ class Product extends Model
     }
     public function order(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
     {
-        return $this->belongsToMany(Order::class, 'product_orders', 'product_id', 'order_id');
+        return $this->belongsToMany(Order::class, 'product_orders', 'product_id', 'order_id')
+            ->withPivot('quantity');
     }
 
     public function product_existence(): \Illuminate\Database\Eloquent\Relations\HasOne

@@ -3,11 +3,12 @@
 namespace App\Services\Implementations;
 
 use App\Repositories\Contracts\ProductRepositoryInterface;
+use App\Repositories\Implementations\ProductRepository;
 use App\Services\Contracts\ProductServiceInterface;
 
 class ProductService implements ProductServiceInterface
 {
-    public function __construct(protected ProductRepositoryInterface $productRepository)
+    public function __construct(protected ProductRepository $productRepository)
     {
     }
 

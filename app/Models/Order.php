@@ -11,7 +11,8 @@ class Order extends Model
 
     public function product(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
     {
-        return $this->belongsToMany(Product::class, 'product_orders', 'order_id', 'product_id');
+        return $this->belongsToMany(Product::class, 'product_orders', 'order_id', 'product_id')
+            ->withPivot('quantity');
     }
 
     public function employee(): \Illuminate\Database\Eloquent\Relations\BelongsTo
@@ -23,4 +24,9 @@ class Order extends Model
     {
         return $this->belongsTo(Client::class);
     }
+    public function delivery(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(Delivery::class);
+    }
+
 }
