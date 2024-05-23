@@ -58,52 +58,52 @@ function setCurrentImage(imageSource) {
         </div>
 
         <div v-if="product.order[0]"
-                 class="hidden sm:block w-3/4 dark:bg-gray-800 bg-white-200 rounded-lg mt-10 mx-auto py-12">
+                 class="sm:block w-3/4 dark:bg-gray-800 bg-white-200 rounded-lg mt-10 mx-auto py-12">
             <h1 class="text-white text-4xl text-center my-10">
                 Orders
             </h1>
             <table class="table-fixed dark:text-white w-5/6 mx-auto text-sm xl:text-base">
                 <thead>
                 <tr>
-                    <th class="dark:border-amber-100 border-gray-950 border hidden md:table-cell md:w-3/12">
+                    <th class="dark:border-amber-100 border-gray-950 border truncate text-xs lg:text-base md:table-cell md:w-3/12">
                         Client
                     </th>
-                    <th class="dark:border-amber-100 border-gray-950 border hidden md:table-cell md:w-3/12">
+                    <th class="dark:border-amber-100 border-gray-950 border truncate text-xs lg:text-base md:table-cell md:w-3/12">
                         Employee
                     </th>
-                    <th class="dark:border-amber-100 border-gray-950 border hidden md:table-cell md:w-2/12">
+                    <th class="dark:border-amber-100 border-gray-950 border truncate text-xs lg:text-base md:table-cell md:w-2/12">
                         Total
                     </th>
-                    <th class="dark:border-amber-100 border-gray-950 border hidden md:table-cell md:w-1/12">
+                    <th class="dark:border-amber-100 border-gray-950 border truncate text-xs lg:text-base md:table-cell md:w-1/12">
                         Order ID
                     </th>
-                    <th class="dark:border-amber-100 border-gray-950 border hidden md:table-cell md:w-1/12">
+                    <th class="dark:border-amber-100 border-gray-950 border truncate hidden lg:text-base md:table-cell md:w-1/12">
                         Payment method
                     </th>
-                    <th class="dark:border-amber-100 border-gray-950 border hidden md:table-cell text-wrap md:w-1/12">
+                    <th class="dark:border-amber-100 border-gray-950 border truncate hidden lg:text-base md:table-cell text-wrap md:w-1/12">
                         Credit (?)
                     </th>
-                    <th class="dark:border-amber-100 border-gray-950 border hidden md:table-cell md:w-1/12">
+                    <th class="dark:border-amber-100 border-gray-950 border truncate hidden lg:text-base md:table-cell md:w-1/12">
                         Paid (?)
                     </th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr v-for="order in orders">
-                    <td class="dark:border-amber-100 border-gray-950 border p-2 hidden md:table-cell text-pretty">
+                    <td class="dark:border-amber-100 border-gray-950 border p-2 truncate text-xs lg:text-xl md:table-cell text-pretty">
                         {{ order.client.surname }} {{ order.client.name }}
                     </td>
-                    <td class="dark:border-amber-100 border-gray-950 border p-2 hidden md:table-cell text-pretty">
+                    <td class="dark:border-amber-100 border-gray-950 border p-2 truncate text-xs lg:text-xl md:table-cell text-pretty">
                         <p class="underline decoration-solid">{{ order.employee.position }}</p>
                         <p>{{ order.employee.surname }} {{ order.employee.name }}</p>
                     </td>
-                    <td class="dark:border-amber-100 border-gray-950 border p-2 hidden md:table-cell text-pretty">
+                    <td class="dark:border-amber-100 border-gray-950 border p-2 truncate text-xs lg:text-xl md:table-cell text-pretty">
                         {{ order.total }} $
                     </td>
-                    <td class="dark:border-amber-100 border-gray-950 border p-2 hidden md:table-cell text-pretty hover:underline">
+                    <td class="dark:border-amber-100 border-gray-950 border p-2 truncate text-xs lg:text-xl md:table-cell text-pretty hover:underline">
                         <a :href="route('orders.show', order.id)">{{ order.id }}</a>
                     </td>
-                    <td class="dark:border-amber-100 border-gray-950 border p-2 hidden md:table-cell text-pretty">
+                    <td class="dark:border-amber-100 border-gray-950 border p-2 truncate hidden md:table-cell text-pretty">
                         {{ order.payment_method }}
                     </td>
                     <td class="dark:border-amber-100 border-gray-950 border p-2 hidden md:table-cell text-pretty">
