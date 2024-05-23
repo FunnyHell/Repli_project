@@ -11,7 +11,7 @@ class UpdateOrderRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -19,10 +19,23 @@ class UpdateOrderRequest extends FormRequest
      *
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
      */
-    public function rules(): array
+    public function rules() :array
     {
         return [
-            //
+            'client.id' => 'required|exists:clients,id',
+            'employee.id' => 'required|exists:employees,id',
+            'products' => 'required|array',
+            'products.*.id' => 'nullable|exists:products,id',
+            'products.*.name' => 'required|string',
+            'products.*.price' => 'required|numeric|min:0',
+            'products.*.category_id' => 'required|exists:categories,id',
+            'products.*.pivot.quantity' => 'required|integer|min:1',
+            'order_date' => 'required|date',
+            'status' => 'required|string',
+            'total' => 'required|numeric|min:0',
+            'payment_method' => 'required|string',
+            'is_credit' => 'required|boolean',
+            'is_paid' => 'required|boolean',
         ];
     }
 }

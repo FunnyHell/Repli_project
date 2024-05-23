@@ -7,5 +7,6 @@ interface BaseRepositoryInterface
     public function create();
     public function show($id);
     public function edit($id);
+    public function update(array $data, $id);
     public function destroy($id);
 }

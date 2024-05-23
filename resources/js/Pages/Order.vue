@@ -1,14 +1,18 @@
 <script setup>
-import { ref, watch } from 'vue';
+import { onBeforeUnmount, ref, watch } from 'vue';
 import { Head } from '@inertiajs/vue3';
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
+import { Inertia } from "@inertiajs/inertia";
 
 const props = defineProps({
-    order: Object
-})
+    order: Object,
+    categories: Array
+});
+
 const client = ref(props.order.client);
 const employee = ref(props.order.employee);
 const products = ref([...props.order.product]);
+const categories = ref(props.categories);
 const total = ref(props.order.total);
 const isModalOpen = ref(false); // Состояние для управления модальным окном
 
@@ -19,9 +23,10 @@ const openModal = () => {
 const closeModal = () => {
     isModalOpen.value = false;
 };
+
 // Функции для добавления и удаления продуктов
 const addProduct = () => {
-    products.value.push({ name: '', price: 0, pivot: { quantity: 0 } });
+    products.value.push({ name: '', price: 0, category_id: null, pivot: { quantity: 0 } });
     calculateTotal();
 };
 
@@ -43,22 +48,49 @@ watch(products, calculateTotal, { deep: true });
 
 // Функция для отправки формы
 const submitForm = () => {
-    // Логика отправки формы
-    console.log('Form submitted', {
+    const formData = {
         client: client.value,
         employee: employee.value,
-        products: products.value,
-        total: total.value
-    });
+        products: products.value.map(product => ({
+            id: product.id,
+            name: product.name,
+            price: product.price,
+            category_id: product.category_id,
+            pivot: { quantity: product.pivot.quantity }
+        })),
+        total: total.value,
+        order_date: props.order.order_date,
+        status: props.order.status,
+        payment_method: props.order.payment_method,
+        is_credit: props.order.is_credit,
+        is_paid: props.order.is_paid,
+    };
+    Inertia.put(route('orders.update', props.order.id), formData);
     closeModal();
 };
 
+onBeforeUnmount(() => {
+    axios.post('/clear-session');
+});
 </script>
 
 <template>
     <Head :title="props.order.name"/>
     <h1 v-for="el, key in props.order"> {{ key }}: {{ el }} </h1>
     <AuthenticatedLayout>
+        <div v-if="$page.props.flash.message === 'Error'"
+             class="flex items-center justify-center mx-auto p-4 my-4 w-1/2 text-balance text-red-800 border border-red-300 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400 dark:border-red-800"
+             role="alert">
+            <svg class="flex-shrink-0 inline w-4 h-4 me-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                 fill="currentColor" viewBox="0 0 20 20">
+                <path
+                    d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z"/>
+            </svg>
+            <span class="sr-only">Info</span>
+            <div>
+                <span class="font-medium">Order wasn't updated!</span>
+            </div>
+        </div>
         <div class="w-3/4 mt-10 mx-auto md:py-16">
             <div class="flex justify-between my-5">
                 <h1 class="text-white md:text-3xl">Client: {{ client.surname }} {{ client.name }}</h1>
@@ -119,11 +151,11 @@ const submitForm = () => {
                 <div class="mb-4 flex gap-4">
                     <div class="w-1/2">
                         <label class="block text-gray-700 dark:text-gray-200">Client Surname</label>
-                        <input type="text" v-model="client.surname" class="w-3/4 mt-1 p-2 border rounded" />
+                        <input type="text" v-model="client.surname" class="w-3/4 mt-1 p-2 border rounded"/>
                     </div>
                     <div class="w-1/2">
                         <label class="block text-gray-700 dark:text-gray-200">Client Name</label>
-                        <input type="text" v-model="client.name" class="w-3/4 mt-1 p-2 border rounded" />
+                        <input type="text" v-model="client.name" class="w-3/4 mt-1 p-2 border rounded"/>
                     </div>
                     <div>
                         <label class="block text-gray-700 dark:text-gray-200">Client Sex:</label>
@@ -136,48 +168,60 @@ const submitForm = () => {
                 <div class="mb-4 flex gap-4">
                     <div class="w-1/6">
                         <label class="block text-gray-700 dark:text-gray-200">Client Age</label>
-                        <input type="number" v-model="client.age" class="w-3/4 mt-1 p-2 border rounded" />
+                        <input type="number" v-model="client.age" class="w-3/4 mt-1 p-2 border rounded"/>
                     </div>
                     <div class="w-1/2">
                         <label class="block text-gray-700 dark:text-gray-200">Client Phone</label>
-                        <input type="text" v-model="client.phone" class="w-full mt-1 p-2 border rounded" />
+                        <input type="text" v-model="client.phone" class="w-full mt-1 p-2 border rounded"/>
                     </div>
                     <div class="w-1/2">
                         <label class="block text-gray-700 dark:text-gray-200">Client Email</label>
-                        <input type="text" v-model="client.email" class="w-full mt-1 p-2 border rounded" />
+                        <input type="text" v-model="client.email" class="w-full mt-1 p-2 border rounded"/>
                     </div>
                 </div>
                 <div class="mb-4">
                     <label class="block text-gray-700 dark:text-gray-200">Client Address</label>
-                    <input type="text" v-model="client.address" class="w-full mt-1 p-2 border rounded" />
+                    <input type="text" v-model="client.address" class="w-full mt-1 p-2 border rounded"/>
                 </div>
 
                 <div class="mt-12 mb-4 flex gap-4">
                     <div class="w-1/2">
                         <label class="block text-gray-700 dark:text-gray-200">Employee Surname</label>
-                        <input type="text" v-model="employee.surname" class="w-full mt-1 p-2 border rounded" />
+                        <input type="text" v-model="employee.surname" class="w-full mt-1 p-2 border rounded"/>
                     </div>
                     <div class="w-1/2">
                         <label class="block text-gray-700 dark:text-gray-200">Employee Name</label>
-                        <input type="text" v-model="employee.name" class="w-full mt-1 p-2 border rounded" />
+                        <input type="text" v-model="employee.name" class="w-full mt-1 p-2 border rounded"/>
                     </div>
                 </div>
                 <div class="mt-12 mb-4">
                     <h3 class="block text-gray-700 dark:text-gray-200">Products</h3>
                     <div v-for="(product, index) in products" :key="index" class="mb-4 flex gap-4 items-center">
-                        <input type="text" v-model="product.name" class="w-1/3 mt-1 p-2 border rounded" placeholder="Product Name" />
-                        <input type="number" v-model="product.price" class="w-1/3 mt-1 p-2 border rounded" placeholder="Price" @input="calculateTotal" />
-                        <input type="number" v-model="product.pivot.quantity" class="w-1/3 mt-1 p-2 border rounded" placeholder="Quantity" @input="calculateTotal" />
-                        <button type="button" @click="removeProduct(index)" class="bg-red-500 text-white px-4 py-2 rounded">Remove</button>
+                        <input type="text" v-model="product.name" class="w-1/3 mt-1 p-2 border rounded"
+                               placeholder="Product Name"/>
+                        <input type="number" v-model="product.price" class="w-1/3 mt-1 p-2 border rounded"
+                               placeholder="Price" @input="calculateTotal"/>
+                        <input type="number" v-model="product.pivot.quantity" class="w-1/3 mt-1 p-2 border rounded"
+                               placeholder="Quantity" @input="calculateTotal"/>
+                        <select v-model="product.category_id" class="w-1/3 mt-1 p-2 border rounded">
+                            <option v-for="category in categories" :key="category.id" :value="category.id">{{ category.name }}</option>
+                        </select>
+                        <button type="button" @click="removeProduct(index)"
+                                class="bg-red-500 text-white px-4 py-2 rounded">Remove
+                        </button>
                     </div>
-                    <button type="button" @click="addProduct" class="bg-green-500 text-white px-4 py-2 rounded">Add Product</button>
+                    <button type="button" @click="addProduct" class="bg-green-500 text-white px-4 py-2 rounded">Add
+                        Product
+                    </button>
                 </div>
                 <div class="mb-4">
                     <label class="block text-gray-700 dark:text-gray-200">Total</label>
-                    <input type="number" v-model="total" class="w-full mt-1 p-2 border rounded" readonly />
+                    <input type="number" v-model="total" class="w-full mt-1 p-2 border rounded" readonly/>
                 </div>
                 <div class="flex justify-end">
-                    <button type="button" @click="closeModal" class="bg-gray-200 dark:bg-gray-700 px-4 py-2 rounded mr-2">Cancel</button>
+                    <button type="button" @click="closeModal"
+                            class="bg-gray-200 dark:bg-gray-700 px-4 py-2 rounded mr-2">Cancel
+                    </button>
                     <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">Save</button>
                 </div>
             </form>
@@ -186,5 +230,5 @@ const submitForm = () => {
 </template>
 
 <style scoped>
-
+/* Ваши стили... */
 </style>

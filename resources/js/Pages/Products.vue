@@ -31,10 +31,6 @@ const filteredProducts = computed(() => {
     );
 });
 
-const getCurrentTheme = () => {
-    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-}
-
 onBeforeUnmount(() => {
     axios.post('/clear-session');
 });

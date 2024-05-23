@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Order;
 use App\Http\Requests\StoreOrderRequest;
 use App\Http\Requests\UpdateOrderRequest;
+use App\Models\Category;
+use App\Models\Order;
 use App\Services\Implementations\OrderService;
+use Illuminate\Support\Facades\Session;
 use Inertia\Inertia;
 
 class OrderController extends Controller
@@ -13,8 +15,10 @@ class OrderController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function __construct(protected OrderService $service) {
+    public function __construct(protected OrderService $service)
+    {
     }
+
     public function index()
     {
 
@@ -42,7 +46,8 @@ class OrderController extends Controller
     public function show($id): \Inertia\Response
     {
         $order = $this->service->find($id);
-        return Inertia::render('Order', ['order' => $order]);
+        $categories = Category::all();
+        return Inertia::render('Order', ['order' => $order, 'categories' => $categories]);
     }
 
     /**
@@ -56,9 +61,20 @@ class OrderController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateOrderRequest $request, Order $order)
+    public function update(UpdateOrderRequest $request, $id)
     {
-        //
+        if (auth()->user()) {
+            $validated = $request->validated();
+            if ($this->service->update($validated, $id)) {
+                Session::flash('message', 'Success');
+                return redirect()->route('orders.show', $id);
+            } else {
+                Session::flash('message', 'Error');
+                return redirect()->back();
+            }
+        } else {
+            return redirect()->route('login');
+        }
     }
 
     /**

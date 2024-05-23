@@ -8,7 +8,16 @@ use Illuminate\Database\Eloquent\Model;
 class Order extends Model
 {
     use HasFactory;
-
+    protected $fillable = [
+        'client_id',
+        'employee_id',
+        'order_date',
+        'status',
+        'total',
+        'payment_method',
+        'is_credit',
+        'is_paid',
+    ];
     public function product(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
     {
         return $this->belongsToMany(Product::class, 'product_orders', 'order_id', 'product_id')

@@ -61,7 +61,7 @@ class ProductRepository implements ProductRepositoryInterface
         // TODO: Implement edit() method.
     }
 
-    public function update(UpdateProductRequest $request, Product $product)
+    public function update(array $data, $id)
     {
         // TODO: Implement update() method.
     }

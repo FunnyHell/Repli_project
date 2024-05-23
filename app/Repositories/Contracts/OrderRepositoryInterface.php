@@ -9,5 +9,4 @@ use App\Models\Order;
 interface OrderRepositoryInterface extends BaseRepositoryInterface
 {
     public function store(StoreOrderRequest $request);
-    public function update(UpdateOrderRequest $request, Order $order);
 }

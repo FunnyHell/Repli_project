@@ -21,6 +21,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/products/{product}', [ProductController::class, 'destroy'])->name('products.destroy');
 
     Route::get('/order/{id}', [OrderController::class, 'show'])->name('orders.show');
+    Route::put('/order/{id}', [OrderController::class, 'update'])->name('orders.update');
 });
 
 Route::post('/clear-session', function () {

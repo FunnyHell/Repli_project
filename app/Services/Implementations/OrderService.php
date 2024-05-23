@@ -18,7 +18,7 @@ class OrderService implements OrderServiceInterface
 
     public function update(array $data, $id)
     {
-        // TODO: Implement update() method.
+        return $this->repository->update($data, $id);
     }
 
     public function delete($id)
