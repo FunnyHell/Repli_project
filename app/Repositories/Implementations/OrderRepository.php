@@ -5,7 +5,10 @@ namespace App\Repositories\Implementations;
 use App\Http\Requests\StoreOrderRequest;
 use App\Models\Order;
 use App\Models\Product;
+use App\Models\ProductTransfer;
+use App\Models\Refund;
 use App\Repositories\Contracts\OrderRepositoryInterface;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class OrderRepository implements OrderRepositoryInterface
@@ -87,4 +90,29 @@ class OrderRepository implements OrderRepositoryInterface
     {
         // TODO: Implement create() method.
     }
+
+    public function getSalesData($locationId, $locationType, $startDate, $endDate)
+    {
+        return Order::whereHas('employee', function($query) use ($locationId) {
+            $query->where('market_id', $locationId);
+        })
+            ->where('is_refunded', false)
+            ->whereBetween('order_date', [$startDate, $endDate])
+            ->selectRaw('DATE(order_date) as date, SUM(total) as total_sales, COUNT(*) as total_orders')
+            ->groupBy('date')
+            ->get();
+    }
+
+    public function getRefundsData($locationId, $locationType, $startDate, $endDate)
+    {
+        return Refund::whereHas('order.employee', function($query) use ($locationId) {
+            $query->where('market_id', $locationId);
+        })
+            ->join('orders', 'refunds.order_id', '=', 'orders.id')
+            ->whereBetween('refund_date', [$startDate, $endDate])
+            ->selectRaw('DATE(refund_date) as date, SUM(orders.total) as total_refunds, COUNT(refunds.id) as total_refunded_orders')
+            ->groupBy('date')
+            ->get();
+    }
+
 }

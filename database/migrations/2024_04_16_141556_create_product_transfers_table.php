@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('from_location_id');
             $table->unsignedBigInteger('to_location_id');
-            $table->foreignId('supply_request_id')->constrained()->onDelete('cascade');
+            $table->foreignId('product_id')->constrained()->onDelete('cascade');
             $table->enum('status', ['pending', 'approved', 'in progress', 'delivered', 'rejected'])->default('pending');
             $table->date('transfer_date');
             $table->string('from_location_type');

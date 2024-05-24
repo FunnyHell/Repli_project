@@ -17,6 +17,7 @@ class Order extends Model
         'payment_method',
         'is_credit',
         'is_paid',
+        'is_refunded'
     ];
     public function product(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
     {
@@ -36,6 +37,10 @@ class Order extends Model
     public function delivery(): \Illuminate\Database\Eloquent\Relations\HasOne
     {
         return $this->hasOne(Delivery::class);
+    }
+    public function refunds(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Refund::class);
     }
 
 }

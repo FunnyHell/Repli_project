@@ -76,7 +76,7 @@ onBeforeUnmount(() => {
 
 <template>
     <Head :title="props.order.name"/>
-    <h1 v-for="el, key in props.order"> {{ key }}: {{ el }} </h1>
+<!--    <h1 v-for="el, key in props.order"> {{ key }}: {{ el }} </h1>-->
     <AuthenticatedLayout>
         <div v-if="$page.props.flash.message === 'Error'"
              class="flex items-center justify-center mx-auto p-4 my-4 w-1/2 text-balance text-red-800 border border-red-300 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400 dark:border-red-800"
