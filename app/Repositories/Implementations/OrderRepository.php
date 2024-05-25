@@ -86,7 +86,7 @@ class OrderRepository implements OrderRepositoryInterface
         return $order;
     }
 
-    public function create()
+    public function create($data)
     {
         // TODO: Implement create() method.
     }

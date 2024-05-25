@@ -28,9 +28,10 @@ class ProductRepository implements ProductRepositoryInterface
         return null;
     }
 
-    public function create()
+    public function create($data)
     {
-        // TODO: Implement create() method.
+        $data['slug'] = str_replace(' ', '-', $data['name']);
+        return Product::create($data);
     }
 
     public function store(StoreProductRequest $request)
@@ -75,4 +76,5 @@ class ProductRepository implements ProductRepositoryInterface
             return false;
         }
     }
+
 }

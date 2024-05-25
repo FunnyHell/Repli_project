@@ -11,7 +11,7 @@ class UpdateProductTransferRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +22,7 @@ class UpdateProductTransferRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'status' => 'required|string|in:pending,approved,in progress,delivered,rejected',
         ];
     }
 }

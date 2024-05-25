@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\ProductTransfer;
 use App\Http\Requests\StoreProductTransferRequest;
 use App\Http\Requests\UpdateProductTransferRequest;
+use App\Models\ProductTransfer;
+use Illuminate\Support\Facades\Session;
 
 class ProductTransferController extends Controller
 {
@@ -62,5 +63,23 @@ class ProductTransferController extends Controller
     public function destroy(ProductTransfer $ProductTransfer)
     {
         //
+    }
+
+    public function updateStatus(UpdateProductTransferRequest $request, $id)
+    {
+        if (auth()->user()) {
+            $validated = $request->validated();
+
+            $transfer = ProductTransfer::findOrFail($id);
+            $transfer->status = $request->status;
+            if ($transfer->save()) {
+                Session::flash('message', 'Status updated successfully');
+            } else {
+                Session::flash('message', 'Failed to update status');
+            }
+            return redirect()->back();
+        } else {
+            return redirect()->route('login');
+        }
     }
 }

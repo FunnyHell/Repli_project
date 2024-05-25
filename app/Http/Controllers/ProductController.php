@@ -29,7 +29,8 @@ class ProductController extends Controller
      */
     public function create()
     {
-        //
+        $categories = $this->productService->getAllCategories();
+        return Inertia::render('CreateProduct', ['categories' => $categories]);
     }
 
     /**
@@ -37,7 +38,14 @@ class ProductController extends Controller
      */
     public function store(StoreProductRequest $request)
     {
-        //
+        $validated = $request->validated();
+        if($this->productService->create($validated)){
+            Session::flash('message', 'Success');
+            return redirect()->back();
+        } else {
+            Session::flash('message', 'Error');
+            return redirect()->back();
+        }
     }
 
     /**

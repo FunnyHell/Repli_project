@@ -10,6 +10,8 @@ class ProductTransferRepository implements ProductTransferRepositoryInterface
 
     public function getTransferStatuses($locationId, $locationType)
     {
+        $oneMonthAgo = now()->subMonth(); // Получаем дату месяц назад
+
         $transfers = ProductTransfer::with('products')
             ->where(function($query) use ($locationId, $locationType) {
                 $query->where('from_location_id', $locationId)
@@ -19,7 +21,14 @@ class ProductTransferRepository implements ProductTransferRepositoryInterface
                             ->where('to_location_type', $locationType);
                     });
             })
-            ->select('id', 'status', 'transfer_date', 'product_id')
+            ->where(function($query) use ($oneMonthAgo) {
+                $query->where('transfer_date', '>', $oneMonthAgo)
+                    ->orWhere(function($query) {
+                        $query->where('status', '!=', 'delivered')
+                            ->where('status', '!=', 'rejected');
+                    });
+            })
+            ->select('id', 'status', 'transfer_date', 'product_id', 'updated_at')
             ->get();
 
         $statusCounts = $transfers->groupBy('status')->map(function ($items, $key) {
@@ -34,7 +43,7 @@ class ProductTransferRepository implements ProductTransferRepositoryInterface
                         'product' => [
                             'id' => $item->products->id,
                             'name' => $item->products->name,
-                        ], // Обработка случая, когда продукт отсутствует
+                        ],
                     ];
                 }),
             ];
@@ -54,5 +63,6 @@ class ProductTransferRepository implements ProductTransferRepositoryInterface
 
         return $statusCounts->values();
     }
+
 
 }

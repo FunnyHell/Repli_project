@@ -2,6 +2,7 @@
 
 namespace App\Services\Implementations;
 
+use App\Models\Category;
 use App\Repositories\Contracts\ProductRepositoryInterface;
 use App\Repositories\Implementations\ProductRepository;
 use App\Services\Contracts\ProductServiceInterface;
@@ -14,7 +15,7 @@ class ProductService implements ProductServiceInterface
 
     public function create(array $data)
     {
-        // TODO: Implement create() method.
+        return $this->productRepository->create($data);
     }
 
     public function update(array $data, $id)
@@ -36,5 +37,10 @@ class ProductService implements ProductServiceInterface
     public function find($id)
     {
         return $this->productRepository->show($id);
+    }
+
+    public function getAllCategories()
+    {
+        return Category::all();
     }
 }
