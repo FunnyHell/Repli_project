@@ -1,21 +1,25 @@
 <script setup>
-import {Inertia} from '@inertiajs/inertia';
-import {Head, usePage} from '@inertiajs/vue3';
+import { Inertia } from '@inertiajs/inertia';
+import { Head, usePage } from '@inertiajs/vue3';
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
-import {computed, onBeforeUnmount, ref} from "vue";
+import { computed, onBeforeUnmount, ref } from "vue";
 
 const props = defineProps({
-    products: Array
+    products: Object, // Изменено на объект
+    categories: Array
 });
 
+const products = props.products.original.products
+const categories = props.products.original.categories
 const deleteProduct = async (id) => {
     console.log(usePage().props.auth.user);
     if (confirm('Are you sure you want to delete this product?')) {
-        Inertia.delete(route('products.destroy', {id: id}));
+        Inertia.delete(route('products.destroy', { id: id }));
     }
 }
 
 const searchQuery = ref('');
+const selectedCategory = ref('');
 
 function handleImageError() {
     document.getElementById('screenshot-container')?.classList.add('!hidden');
@@ -25,9 +29,10 @@ function handleImageError() {
 }
 
 const filteredProducts = computed(() => {
-    return props.products.filter(product =>
-        product.name.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-        product.category.name.toLowerCase().includes(searchQuery.value.toLowerCase())
+    return products.filter(product =>
+        (product.name.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+            product.category.name.toLowerCase().includes(searchQuery.value.toLowerCase())) &&
+        (selectedCategory.value === '' || product.category_id === parseInt(selectedCategory.value))
     );
 });
 
@@ -56,13 +61,17 @@ onBeforeUnmount(() => {
                 <span class="font-medium">Product wasn't deleted!</span>
             </div>
         </div>
-
         <div class="py-12">
             <div class="flex justify-center items-center">
                 <input type="text" v-model="searchQuery" placeholder="Поиск по продуктам..."
-                       class="mb-4 p-2 w-2/3 md:w-1/3 text-black mx-6
-                        md:w-1/2"/>
-                <form :action="route('products.index')" method="get" class="mb-4">
+                       class="mb-4 p-2 w-2/3 md:w-1/3 text-black mx-6 md:w-1/2"/>
+                <select v-model="selectedCategory" class="mb-4 p-2 w-2/3 md:w-1/3 text-black mx-6 md:w-1/2">
+                    <option value="">Все категории</option>
+                    <option v-for="category in categories" :key="category.id" :value="category.id">
+                        {{ category.name }}
+                    </option>
+                </select>
+                <form :action="route('products.create')" method="get" class="mb-4">
                     <button type="submit">
                         <img v-if="getCurrentTheme() === 'dark'" :src="'storage/icons/add-dark.png'"
                              alt="Add new product" class="w-8 h-8 hover:scale-125 transition-all">
@@ -94,7 +103,7 @@ onBeforeUnmount(() => {
                 </tr>
                 </thead>
                 <tbody>
-                <tr v-for="product in filteredProducts">
+                <tr v-for="product in filteredProducts" :key="product.id">
                     <td class="dark:border-amber-100 border-gray-950 border hidden md:table-cell">
                         <img v-if="product.product_image[0]" :src="'storage/'+product.product_image[0].source"
                              :alt="product.name+' Image'" class="w-full ">
@@ -130,5 +139,4 @@ onBeforeUnmount(() => {
             </table>
         </div>
     </AuthenticatedLayout>
-
 </template>

@@ -4,7 +4,9 @@ namespace App\Repositories\Implementations;
 
 use App\Http\Requests\StoreProductRequest;
 use App\Http\Requests\UpdateProductRequest;
+use App\Models\Category;
 use App\Models\Product;
+use App\Models\ProductImage;
 use App\Repositories\Contracts\ProductRepositoryInterface;
 
 class ProductRepository implements ProductRepositoryInterface
@@ -16,22 +18,33 @@ class ProductRepository implements ProductRepositoryInterface
         if ($user) {
             $locationId = $user->location_id;
             $locationType = $user->location_type;
-            return Product::where('deleted_at', null)->with(['category', 'feature', 'order', 'product_image',
-                'product_existence' => function ($query) use ($locationId, $locationType) {
-                $query->where('location_id', $locationId)->where('location_type', $locationType);
-            }, 'supply_request'=>function ($query) use ($locationId, $locationType) {
-                if ($locationType == 'warehouse') {
-                    $query->where('warehouse_id', $locationId);
-                }
-            }])->get();
+            $products = Product::where('deleted_at', null)
+                ->with([
+                    'category', 'feature', 'order', 'product_image',
+                    'product_existence' => function ($query) use ($locationId, $locationType) {
+                        $query->where('location_id', $locationId)->where('location_type', $locationType);
+                    },
+                    'supply_request' => function ($query) use ($locationId, $locationType) {
+                        if ($locationType == 'warehouse') {
+                            $query->where('warehouse_id', $locationId);
+                        }
+                    }
+                ])->get();
+            $categories = Category::all();
+            return response()->json(compact('products', 'categories'));
         }
         return null;
     }
 
-    public function create($data)
+
+    public function create($data, $imagePath = null)
     {
         $data['slug'] = str_replace(' ', '-', $data['name']);
-        return Product::create($data);
+        $product = Product::create($data);
+        if ($imagePath) {
+            ProductImage::create(['product_id' => $product->id, 'source' => $imagePath]);
+        }
+        return $product;
     }
 
     public function store(StoreProductRequest $request)
@@ -44,17 +57,23 @@ class ProductRepository implements ProductRepositoryInterface
         $user = auth()->user();
         $locationId = $user->location_id;
         $locationType = $user->location_type;
-        return Product::where('deleted_at', null)->with(['category', 'feature', 'product_image',
-            'order' => function ($query) {
-                $query->with(['employee', 'client']);
-            },
-            'product_existence' => function ($query) use ($locationId, $locationType) {
-                $query->where('location_id', $locationId)->where('location_type', $locationType);
-            }, 'supply_request'=>function ($query) use ($locationId, $locationType) {
-                if ($locationType == 'warehouse') {
-                    $query->where('warehouse_id', $locationId);
+        $product = Product::where('deleted_at', null)
+            ->with([
+                'category', 'feature', 'product_image',
+                'order' => function ($query) {
+                    $query->with(['employee', 'client']);
+                },
+                'product_existence' => function ($query) use ($locationId, $locationType) {
+                    $query->where('location_id', $locationId)->where('location_type', $locationType);
+                },
+                'supply_request' => function ($query) use ($locationId, $locationType) {
+                    if ($locationType == 'warehouse') {
+                        $query->where('warehouse_id', $locationId);
+                    }
                 }
-            }])->findOrFail($id);
+            ])->findOrFail($id);
+        $categories = Category::all();
+        return response()->json(compact('product', 'categories'));
     }
 
     public function edit($id)

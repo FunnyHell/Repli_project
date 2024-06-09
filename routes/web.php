@@ -28,8 +28,12 @@ Route::middleware('auth')->group(function () {
     Route::post('/products', [ProductController::class, 'store'])->name('products.store');
     Route::delete('/products/{product}', [ProductController::class, 'destroy'])->name('products.destroy');
 
+    Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
     Route::get('/order/{id}', [OrderController::class, 'show'])->name('orders.show');
+    Route::get('orders/create', [OrderController::class, 'create'])->name('orders.create');
+    Route::post('/order', [OrderController::class, 'store'])->name('orders.store');
     Route::put('/order/{id}', [OrderController::class, 'update'])->name('orders.update');
+    Route::delete('/orders/{id}', [OrderController::class, 'destroy'])->name('orders.destroy');
 });
 
 Route::post('/clear-session', function () {

@@ -13,10 +13,26 @@ const form = ref({
     category_id: '',
     description: '',
     price: '',
+    image: null, // добавляем поле для изображения
 });
 
+const handleFileChange = (event) => {
+    form.value.image = event.target.files[0];
+};
 const submitForm = () => {
-    Inertia.post(route('products.store'), form.value);
+    const formData = new FormData();
+    formData.append('name', form.value.name);
+    formData.append('category_id', form.value.category_id);
+    formData.append('description', form.value.description);
+    formData.append('price', form.value.price);
+    if (form.value.image) {
+        formData.append('image', form.value.image);
+    }
+
+    Inertia.post(route('products.store'), formData, {
+        forceFormData: true,
+    });
+
 };
 </script>
 
@@ -45,6 +61,10 @@ const submitForm = () => {
                 <div class="mb-4">
                     <label class="block text-gray-700 dark:text-gray-100">Price</label>
                     <input type="number" v-model="form.price" class="w-full mt-1 p-2 border rounded" />
+                </div>
+                <div class="mb-4">
+                    <label class="block text-gray-700 dark:text-gray-100">Image</label>
+                    <input type="file" @change="handleFileChange" class="w-full mt-1 p-2 border rounded dark:text-white" />
                 </div>
                 <div class="flex justify-end">
                     <Link href="/" class="bg-gray-200 px-4 py-2 rounded mr-2">Cancel</Link>

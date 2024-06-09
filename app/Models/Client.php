@@ -8,6 +8,16 @@ use Illuminate\Database\Eloquent\Model;
 class Client extends Model
 {
     use HasFactory;
+    protected $fillable = [
+        'surname',
+        'name',
+        'sex',
+        'age',
+        'phone',
+        'email',
+        'address'
+    ];
+
 
     public function order(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
