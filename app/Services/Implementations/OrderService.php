@@ -11,9 +11,9 @@ class OrderService implements OrderServiceInterface
     public function __construct(protected OrderRepository $repository)
     {
     }
-    public function create(array $data)
+    public function create(array $data, $imagePath = null)
     {
-        // TODO: Implement create() method.
+        return $this->repository->create($data);
     }
 
     public function update(array $data, $id)
@@ -23,12 +23,12 @@ class OrderService implements OrderServiceInterface
 
     public function delete($id)
     {
-        // TODO: Implement delete() method.
+        return $this->repository->destroy($id);
     }
 
     public function all()
     {
-        // TODO: Implement all() method.
+        return $this->repository->index();
     }
 
     public function find($id)

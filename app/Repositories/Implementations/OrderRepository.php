@@ -3,11 +3,14 @@
 namespace App\Repositories\Implementations;
 
 use App\Http\Requests\StoreOrderRequest;
+use App\Models\Client;
+use App\Models\Employee;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\ProductTransfer;
 use App\Models\Refund;
 use App\Repositories\Contracts\OrderRepositoryInterface;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
@@ -16,7 +19,9 @@ class OrderRepository implements OrderRepositoryInterface
 
     public function index()
     {
-        // TODO: Implement index() method.
+        return Order::with([
+            'client', 'employee', 'product', 'product.category', 'product.feature', 'product.product_image', 'delivery'
+        ])->where('is_refunded', '=', '0')->get();
     }
 
     public function show($id)
@@ -33,7 +38,12 @@ class OrderRepository implements OrderRepositoryInterface
 
     public function destroy($id)
     {
-        // TODO: Implement destroy() method.
+        if (Order::find($id)) {
+            if(Order::where('id', $id)->update(['is_refunded' => 1])) {
+                return true;
+            }
+            return false;
+        }
     }
 
     public function store(StoreOrderRequest $request)
@@ -86,10 +96,81 @@ class OrderRepository implements OrderRepositoryInterface
         return $order;
     }
 
-    public function create($data)
+    public function create($data, $imagePath = null)
     {
-        // TODO: Implement create() method.
+        // Поиск или создание клиента
+        $client = Client::firstOrCreate(
+            ['surname' => $data['client']['surname'], 'name' => $data['client']['name']],
+            [
+                'sex' => $data['client']['sex'],
+                'age' => $data['client']['age'],
+                'phone' => $data['client']['phone'],
+                'email' => $data['client']['email'],
+                'address' => $data['client']['address']
+            ]
+        );
+
+        // Поиск или создание сотрудника с заданной позицией и market_id
+        $user = Auth::user(); // Получение текущего аутентифицированного пользователя
+        $locationId = $user->location_id; // Получение location_id пользователя
+        $email = $user->email;
+        $employee = Employee::firstOrCreate(
+            ['surname' => $data['employee']['surname'], 'name' => $data['employee']['name']],
+            [
+                'position' => 'продавец',
+                'market_id' => $locationId,
+                'email' => $email,
+                'phone' => +1,
+                'age' => 18
+            ]
+        );
+
+        // Создание заказа
+        $order = Order::create([
+            'client_id' => $client->id,
+            'employee_id' => $employee->id,
+            'total' => $data['total'],
+            'order_date' => $data['order_date'],
+            'status' => $data['status'],
+            'payment_method' => $data['payment_method'],
+            'is_credit' => $data['is_credit'],
+            'is_paid' => $data['is_paid'],
+        ]);
+
+        // Добавление продуктов к заказу
+        if (isset($data['products'])) {
+            $productsToSync = collect($data['products'])->map(function ($product) {
+                if (isset($product['id']) && Product::find($product['id'])) {
+                    return [
+                        'id' => $product['id'],
+                        'quantity' => $product['pivot']['quantity'],
+                    ];
+                } else {  // Создание нового продукта, если он не существует
+                    $newProduct = Product::create([
+                        'name' => $product['name'],
+                        'price' => $product['price'],
+                        'category_id' => $product['category_id'],
+                        'description' => '',
+                        'slug' => Str::slug($product['name']),
+                    ]);
+                    return [
+                        'id' => $newProduct->id,
+                        'quantity' => $product['pivot']['quantity']
+                    ];
+                }
+            });
+
+            $syncData = [];
+            foreach ($productsToSync as $product) {
+                $syncData[$product['id']] = ['quantity' => $product['quantity']];
+            }
+
+            $order->product()->sync($syncData);
+        }
+
+        return $order;
     }
+
 
     public function getSalesData($locationId, $locationType, $startDate, $endDate)
     {

@@ -39,7 +39,13 @@ class ProductController extends Controller
     public function store(StoreProductRequest $request)
     {
         $validated = $request->validated();
-        if($this->productService->create($validated)){
+        if ($request->hasFile('image')) {
+            $imagePath = $request->file('image')->store('uploads', 'public');
+        } else {
+            $imagePath = null;
+        }
+
+        if ($this->productService->create($validated, $imagePath)) {
             Session::flash('message', 'Success');
             return redirect()->back();
         } else {

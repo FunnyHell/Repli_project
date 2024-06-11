@@ -21,7 +21,8 @@ class OrderController extends Controller
 
     public function index()
     {
-
+        $orders = $this->service->all();
+        return Inertia::render('Orders', ['orders' => $orders]);
     }
 
     /**
@@ -29,7 +30,8 @@ class OrderController extends Controller
      */
     public function create()
     {
-        //
+        $categories = Category::all();
+        return Inertia::render('CreateOrder', ['categories' => $categories]);
     }
 
     /**
@@ -37,7 +39,11 @@ class OrderController extends Controller
      */
     public function store(StoreOrderRequest $request)
     {
-        //
+//        dd($request);
+        $validated = $request->validated();
+        $order = $this->service->create($validated);
+
+        return redirect()->route('orders.index')->with('success', 'Order created successfully');
     }
 
     /**
@@ -80,8 +86,18 @@ class OrderController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Order $order)
+    public function destroy($id)
     {
-        //
+        if(auth()->user()) {
+            if($this->service->delete($id)){
+                Session::flash('message', 'Success');
+                return redirect()->back();
+            } else {
+                Session::flash('message', 'Error');
+                return redirect()->back();
+            }
+        } else {
+            return redirect()->route('login');
+        }
     }
 }

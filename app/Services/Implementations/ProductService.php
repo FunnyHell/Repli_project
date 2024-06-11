@@ -13,9 +13,9 @@ class ProductService implements ProductServiceInterface
     {
     }
 
-    public function create(array $data)
+    public function create(array $data, $imagePath = null)
     {
-        return $this->productRepository->create($data);
+        return $this->productRepository->create($data, $imagePath);
     }
 
     public function update(array $data, $id)

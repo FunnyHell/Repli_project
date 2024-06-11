@@ -2,22 +2,58 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import {Head} from '@inertiajs/vue3';
 import {ref} from "vue";
+import {Inertia} from '@inertiajs/inertia';
 
 const props = defineProps({
-    product: Object
-})
-const orders = props.product.order
-const currentImage = ref(props.product.product_image[0] ? '/storage/' + props.product.product_image[0].source : '/storage/placeholder.png');
+    product: Object,
+    categories: Array,
+});
+
+const product = props.product.original.product
+const categories = props.product.original.categories
+
+const orders = product.order;
+const currentImage = ref(product.product_image[0] ? '/storage/' + product.product_image[0].source : '/storage/placeholder.png');
+const isEditModalOpen = ref(false); // Состояние для управления модальным окном
+const form = ref({
+    name: product.name,
+    category_id: product.category.id,
+    description: product.description,
+    price: product.price,
+    image: null,
+});
 
 function setCurrentImage(imageSource) {
     currentImage.value = '/storage/' + imageSource;
 }
 
+const openEditModal = () => {
+    isEditModalOpen.value = true;
+};
+
+const closeEditModal = () => {
+    isEditModalOpen.value = false;
+};
+
+const submitEditForm = () => {
+    const formData = new FormData();
+    formData.append('name', form.value.name);
+    formData.append('category_id', form.value.category_id);
+    formData.append('description', form.value.description);
+    formData.append('price', form.value.price);
+    if (form.value.image) {
+        formData.append('image', form.value.image);
+    }
+    Inertia.post(route('products.update', product.id), formData, {
+        forceFormData: true,
+    }).then(() => {
+        closeEditModal();
+    });
+};
 </script>
 
 <template>
-    <Head :title="props.product.name"/>
-
+    <Head :title="product.name"/>
     <AuthenticatedLayout>
         <h1 v-for="el, key in product" class="text-white">
             {{key}}: {{el}}
@@ -55,10 +91,11 @@ function setCurrentImage(imageSource) {
             <p class="mx-12 sm:m-12 text-white my-6">
                 {{ product.description }}
             </p>
+            <button @click="openEditModal" class="bg-blue-500 text-white mx-16 px-4 py-2 rounded">Edit Product</button>
         </div>
 
         <div v-if="product.order[0]"
-                 class="sm:block w-3/4 dark:bg-gray-800 bg-white-200 rounded-lg mt-10 mx-auto py-12">
+             class="sm:block w-3/4 dark:bg-gray-800 bg-white-200 rounded-lg mt-10 mx-auto py-12">
             <h1 class="text-white text-4xl text-center my-10">
                 Orders
             </h1>
@@ -89,7 +126,7 @@ function setCurrentImage(imageSource) {
                 </tr>
                 </thead>
                 <tbody>
-                <tr v-for="order in orders">
+                <tr v-for="order in orders" :key="order.id">
                     <td class="dark:border-amber-100 border-gray-950 border p-2 truncate text-xs lg:text-xl md:table-cell text-pretty">
                         {{ order.client.surname }} {{ order.client.name }}
                     </td>
@@ -116,6 +153,43 @@ function setCurrentImage(imageSource) {
                 </tr>
                 </tbody>
             </table>
+        </div>
+
+        <!-- Модальное окно для редактирования продукта -->
+        <div v-if="isEditModalOpen" class="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
+            <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg w-1/2">
+                <h2 class="text-xl font-semibold mb-4">Edit Product</h2>
+                <form @submit.prevent="submitEditForm">
+                    <div class="mb-4">
+                        <label class="block text-gray-700 dark:text-gray-200">Product Name</label>
+                        <input type="text" v-model="form.name" class="w-full mt-1 p-2 border rounded"/>
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-gray-700 dark:text-gray-200">Category</label>
+                        <select v-model="form.category_id" class="w-full mt-1 p-2 border rounded">
+                            <option v-for="category in categories" :key="category.id" :value="category.id">
+                                {{ category.name }}
+                            </option>
+                        </select>
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-gray-700 dark:text-gray-200">Description</label>
+                        <textarea v-model="form.description" class="w-full mt-1 p-2 border rounded"></textarea>
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-gray-700 dark:text-gray-200">Price</label>
+                        <input type="number" v-model="form.price" class="w-full mt-1 p-2 border rounded"/>
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-gray-700 dark:text-gray-200">Image</label>
+                        <input type="file" @change="e => form.image = e.target.files[0]" class="w-full mt-1 p-2 border rounded dark:text-white"/>
+                    </div>
+                    <div class="flex justify-end">
+                        <button type="button" @click="closeEditModal" class="bg-gray-200 dark:bg-gray-700 px-4 py-2 rounded mr-2">Cancel</button>
+                        <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">Save</button>
+                    </div>
+                </form>
+            </div>
         </div>
 
     </AuthenticatedLayout>

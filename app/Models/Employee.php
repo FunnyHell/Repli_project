@@ -9,6 +9,16 @@ class Employee extends Model
 {
     use HasFactory;
     public $timestamps = false;
+    public $fillable = [
+        'name',
+        'surname',
+        'position',
+        'email',
+        'phone',
+        'sex',
+        'age',
+        'market_id'
+    ];
 
     public function order(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
