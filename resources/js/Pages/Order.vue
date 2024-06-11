@@ -93,50 +93,50 @@ onBeforeUnmount(() => {
         </div>
         <div class="w-3/4 mt-10 mx-auto md:py-16">
             <div class="flex justify-between my-5">
-                <h1 class="text-white md:text-3xl">Client: {{ client.surname }} {{ client.name }}</h1>
-                <h1 class="text-white md:text-3xl">Sex: {{ client.sex ? 'Male' : 'Female' }} </h1>
+                <h1 class="dark:text-white md:text-3xl">Client: {{ client.surname }} {{ client.name }}</h1>
+                <h1 class="dark:text-white md:text-3xl">Sex: {{ client.sex ? 'Male' : 'Female' }} </h1>
             </div>
             <div class="flex justify-between my-5 flex-wrap">
-                <h1 class="text-white md:text-3xl">Age: {{ client.age }}</h1>
-                <h1 class="text-white md:text-3xl">Phone: {{ client.phone ? client.phone : 'No phone' }} </h1>
-                <h1 class="text-white md:text-3xl">Email: {{ client.email ? client.email : 'No email' }} </h1>
+                <h1 class="dark:text-white md:text-3xl">Age: {{ client.age }}</h1>
+                <h1 class="dark:text-white md:text-3xl">Phone: {{ client.phone ? client.phone : 'No phone' }} </h1>
+                <h1 class="dark:text-white md:text-3xl">Email: {{ client.email ? client.email : 'No email' }} </h1>
             </div>
         </div>
         <div class="w-3/4 mt-10 mx-auto md:py-16">
-            <h1 class="text-white md:text-3xl">Employee: {{ employee.surname }} {{ employee.name }}</h1>
-            <h1 class="text-white md:text-3xl">{{ employee.position }} </h1>
+            <h1 class="dark:text-white md:text-3xl">Employee: {{ employee.surname }} {{ employee.name }}</h1>
+            <h1 class="dark:text-white md:text-3xl">{{ employee.position }} </h1>
         </div>
         <div class="w-3/4 mt-2 mx-auto py-8 flex gap-6 px-4">
-            <h1 class="text-white md:text-3xl">
+            <h1 class="dark:text-white md:text-3xl">
                 Credit: <input type="checkbox" :checked="props.order.is_credit" disabled>
             </h1>
-            <h1 class="text-white md:text-3xl">
+            <h1 class="dark:text-white md:text-3xl">
                 Paid: <input type="checkbox" :checked="props.order.is_paid" disabled>
             </h1>
-            <h1 class="text-white md:text-3xl">
+            <h1 class="dark:text-white md:text-3xl">
                 Delivery: <input type="checkbox" :checked="props.order.delivery" disabled>
             </h1>
         </div>
         <div class="w-3/4 mt-10 mx-auto md:py-16" v-if="props.order.delivery">
-            <h1 class="text-white md:text-3xl">Address: {{ client.address }}</h1>
-            <h1 class="text-white md:text-3xl">Status: {{ props.order.delivery.status }}</h1>
-            <h1 class="text-white md:text-3xl">Delivery date: {{ props.order.delivery.delivery_date }}</h1>
+            <h1 class="dark:text-white md:text-3xl">Address: {{ client.address }}</h1>
+            <h1 class="dark:text-white md:text-3xl">Status: {{ props.order.delivery.status }}</h1>
+            <h1 class="dark:text-white md:text-3xl">Delivery date: {{ props.order.delivery.delivery_date }}</h1>
         </div>
         <div class="w-3/4 mt-10 mx-auto md:py-16">
-            <h1 class="text-white md:text-3xl">Order:</h1>
+            <h1 class="dark:text-white md:text-3xl">Order:</h1>
             <ol class="my-5 list-decimal md:px-10">
-                <li v-for="product in products" class="text-white text-sm md:text-3xl text-pretty"> {{ product.name }} -
+                <li v-for="product in products" class="dark:text-white text-sm md:text-3xl text-pretty"> {{ product.name }} -
                     {{ product.price }}$ - {{ product.pivot.quantity }}
                 </li>
             </ol>
         </div>
         <div class="w-3/4 mt-10 mx-auto pb-16 md:py-16 flex flex-wrap gap-x-6">
-            <h1 class="text-white md:text-3xl">Total: {{ props.order.total }} $</h1>
-            <h1 class="text-white md:text-3xl">Method: {{ props.order.payment_method }}</h1>
-            <h1 class="text-white md:text-3xl">Date: {{ props.order.order_date }}</h1>
+            <h1 class="dark:text-white md:text-3xl">Total: {{ props.order.total }} $</h1>
+            <h1 class="dark:text-white md:text-3xl">Method: {{ props.order.payment_method }}</h1>
+            <h1 class="dark:text-white md:text-3xl">Date: {{ props.order.order_date }}</h1>
             <button
                 @click="openModal"
-                class="md:ml-10 text-white md:text-3xl bg-gray-200 dark:bg-gray-800 py-2 px-4 rounded hover:rounded-xl hover:cursor-pointer">
+                class="md:ml-10 dark:text-white md:text-3xl bg-gray-200 dark:bg-gray-800 py-2 px-4 rounded hover:rounded-xl hover:cursor-pointer">
                 Change
             </button>
         </div>
@@ -207,10 +207,10 @@ onBeforeUnmount(() => {
                             <option v-for="category in categories" :key="category.id" :value="category.id">{{ category.name }}</option>
                         </select>
                         <button type="button" @click="removeProduct(index)"
-                                class="bg-red-500 text-white px-4 py-2 rounded">Remove
+                                class="bg-red-500 dark:text-white px-4 py-2 rounded">Remove
                         </button>
                     </div>
-                    <button type="button" @click="addProduct" class="bg-green-500 text-white px-4 py-2 rounded">Add
+                    <button type="button" @click="addProduct" class="bg-green-500 dark:text-white px-4 py-2 rounded">Add
                         Product
                     </button>
                 </div>
@@ -222,7 +222,7 @@ onBeforeUnmount(() => {
                     <button type="button" @click="closeModal"
                             class="bg-gray-200 dark:bg-gray-700 px-4 py-2 rounded mr-2">Cancel
                     </button>
-                    <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">Save</button>
+                    <button type="submit" class="bg-blue-500 dark:dark:text-white px-4 py-2 rounded">Save</button>
                 </div>
             </form>
         </div>
