@@ -16,7 +16,7 @@ class OrderService implements OrderServiceInterface
         return $this->repository->create($data);
     }
 
-    public function update(array $data, $id)
+    public function update(array $data, $id, $imagePath = null)
     {
         return $this->repository->update($data, $id);
     }

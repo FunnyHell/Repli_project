@@ -81,9 +81,13 @@ class ProductRepository implements ProductRepositoryInterface
         // TODO: Implement edit() method.
     }
 
-    public function update(array $data, $id)
+    public function update(array $data, $id, $imagePath = null)
     {
-        // TODO: Implement update() method.
+        $product = Product::findOrFail($id);
+        $product->update($data);
+        if ($imagePath) {
+            ProductImage::create(['product_id' => $product->id, 'source' => $imagePath]);
+        }
     }
 
     public function destroy($id)

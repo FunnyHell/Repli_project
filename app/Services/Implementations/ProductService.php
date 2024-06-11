@@ -18,9 +18,9 @@ class ProductService implements ProductServiceInterface
         return $this->productRepository->create($data, $imagePath);
     }
 
-    public function update(array $data, $id)
+    public function update(array $data, $id, $imagePath = null)
     {
-        // TODO: Implement update() method.
+        return $this->productRepository->update($data, $id, $imagePath);
     }
 
     public function delete($id): bool

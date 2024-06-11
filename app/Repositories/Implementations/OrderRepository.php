@@ -51,7 +51,7 @@ class OrderRepository implements OrderRepositoryInterface
         // TODO: Implement store() method.
     }
 
-    public function update($data, $id)
+    public function update($data, $id, $imagePath = null)
     {
         $order = Order::findOrFail($id);
         $order->update([

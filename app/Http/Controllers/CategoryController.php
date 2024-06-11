@@ -29,7 +29,9 @@ class CategoryController extends Controller
      */
     public function store(StoreCategoryRequest $request)
     {
-        //
+        // dd($request->name);
+        Category::create(['name' => $request->name]);
+        return redirect()->route('dashboard.index')->with('success', 'Category added successfully.');
     }
 
     /**

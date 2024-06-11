@@ -74,9 +74,21 @@ class ProductController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateProductRequest $request, Product $product)
+    public function update(UpdateProductRequest $request, $id)
     {
-        //
+        $validated = $request->validated();
+        if ($request->hasFile('image')) {
+            $imagePath = $request->file('image')->store('uploads', 'public');
+        } else {
+            $imagePath = null;
+        }
+        if ($this->productService->update($validated, $id, $imagePath)) {
+            Session::flash('message', 'Success');
+            return redirect()->route('orders.show', $id);
+        } else {
+            Session::flash('message', 'Error');
+            return redirect()->back();
+        }
     }
 
     /**

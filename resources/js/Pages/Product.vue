@@ -1,20 +1,20 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import {Head} from '@inertiajs/vue3';
-import {ref} from "vue";
-import {Inertia} from '@inertiajs/inertia';
+import { Head } from '@inertiajs/vue3';
+import { ref } from "vue";
+import { Inertia } from '@inertiajs/inertia';
 
 const props = defineProps({
     product: Object,
     categories: Array,
 });
 
-const product = props.product.original.product
-const categories = props.product.original.categories
+const product = props.product.original.product;
+const categories = props.product.original.categories;
 
 const orders = product.order;
 const currentImage = ref(product.product_image[0] ? '/storage/' + product.product_image[0].source : '/storage/placeholder.png');
-const isEditModalOpen = ref(false); // Состояние для управления модальным окном
+const isEditModalOpen = ref(false);
 const form = ref({
     name: product.name,
     category_id: product.category.id,
@@ -36,29 +36,24 @@ const closeEditModal = () => {
 };
 
 const submitEditForm = () => {
-    const formData = new FormData();
-    formData.append('name', form.value.name);
-    formData.append('category_id', form.value.category_id);
-    formData.append('description', form.value.description);
-    formData.append('price', form.value.price);
-    if (form.value.image) {
-        formData.append('image', form.value.image);
-    }
-    Inertia.post(route('products.update', product.id), formData, {
-        forceFormData: true,
-    }).then(() => {
-        closeEditModal();
-    });
+    const formData = {
+        name: form.value.name,
+        category_id: form.value.category_id,
+        description: form.value.description,
+        price: form.value.price,
+        image: form.value.image ? form.value.image : null,
+    };
+
+    Inertia.put(route('products.update', product.id), formData);
+    closeEditModal();
 };
+
+
 </script>
 
 <template>
     <Head :title="product.name"/>
     <AuthenticatedLayout>
-        <h1 v-for="el, key in product" class="text-white">
-            {{key}}: {{el}}
-        </h1>
-
         <div class="w-3/4 dark:bg-gray-800 bg-white-200 rounded-lg mt-10 mx-auto py-16">
             <div class="sm:flex">
                 <div class="space-y-4 p-8 xl:m-12 lg:w-1/3">
@@ -71,7 +66,7 @@ const submitEditForm = () => {
                              @click="setCurrentImage(image.source)">
                     </div>
                 </div>
-                <div class="mx-12 sm:m-12 text-white w-1/2">
+                <div class="mx-12 sm:m-12 dark:text-white w-1/2">
                     <div class="flex justify-between">
                         <h1 class="sm:text-4xl uppercase ">
                             {{ product.name }}
@@ -83,23 +78,20 @@ const submitEditForm = () => {
                     <h2 class="my-6 sm:text-2xl">
                         Category: {{ product.category.name }}
                     </h2>
-                    <h3 class="my-4 sm:text-xl">
-                        Category description: {{ product.category.description }}
-                    </h3>
                 </div>
             </div>
-            <p class="mx-12 sm:m-12 text-white my-6">
+            <p class="mx-12 sm:m-12 dark:text-white my-6">
                 {{ product.description }}
             </p>
-            <button @click="openEditModal" class="bg-blue-500 text-white mx-16 px-4 py-2 rounded">Edit Product</button>
+            <button @click="openEditModal" class="bg-blue-500 dark:text-white mx-16 px-4 py-2 rounded">Edit Product</button>
         </div>
 
         <div v-if="product.order[0]"
              class="sm:block w-3/4 dark:bg-gray-800 bg-white-200 rounded-lg mt-10 mx-auto py-12">
-            <h1 class="text-white text-4xl text-center my-10">
+            <h1 class="dark:text-white text-4xl text-center my-10">
                 Orders
             </h1>
-            <table class="table-fixed dark:text-white w-5/6 mx-auto text-sm xl:text-base">
+            <table class="table-fixed dark:dark:text-white w-5/6 mx-auto text-sm xl:text-base">
                 <thead>
                 <tr>
                     <th class="dark:border-amber-100 border-gray-950 border truncate text-xs lg:text-base md:table-cell md:w-3/12">
@@ -182,11 +174,11 @@ const submitEditForm = () => {
                     </div>
                     <div class="mb-4">
                         <label class="block text-gray-700 dark:text-gray-200">Image</label>
-                        <input type="file" @change="e => form.image = e.target.files[0]" class="w-full mt-1 p-2 border rounded dark:text-white"/>
+                        <input type="file" @change="e => form.image = e.target.files[0]" class="w-full mt-1 p-2 border rounded dark:dark:text-white"/>
                     </div>
                     <div class="flex justify-end">
                         <button type="button" @click="closeEditModal" class="bg-gray-200 dark:bg-gray-700 px-4 py-2 rounded mr-2">Cancel</button>
-                        <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">Save</button>
+                        <button type="submit" class="bg-blue-500 dark:text-white px-4 py-2 rounded">Save</button>
                     </div>
                 </form>
             </div>
@@ -194,3 +186,27 @@ const submitEditForm = () => {
 
     </AuthenticatedLayout>
 </template>
+
+<style scoped>
+.kanban-column {
+    flex: 1;
+    padding: 20px;
+    border-radius: 5px;
+}
+
+.kanban-tasks {
+    min-height: 200px;
+    padding: 10px;
+}
+
+.kanban-task {
+    background-color: #496599;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+}
+
+.z-50 {
+    z-index: 50;
+}
+</style>
